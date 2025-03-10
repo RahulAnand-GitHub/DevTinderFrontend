@@ -15,7 +15,7 @@ const Login = () => {
 
   const onLogin = async () => {
     try {
-      const result = await axios.post(
+      const res = await axios.post(
         BASE_URL+'/login',
         {
           email,
@@ -25,8 +25,8 @@ const Login = () => {
           withCredentials: true,
         }
       )
-      dispatch(addUser(result.data))
-      toast.success(result.data.message)
+      dispatch(addUser(res.data))
+      toast.success('Login Successful')
       return navigate('/feed')
     } catch (e) {
       console.error(e)

@@ -1,6 +1,9 @@
+import { Toaster } from 'react-hot-toast'
+
 const Feed = () => {
   return (
     <div className='flex justify-center items-center h-screen'>
+      <Toaster/>
       <h1 className='text-6xl font-extrabold'>Feed Page</h1>
     </div>
   )
