@@ -1,39 +1,45 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { BASE_URL } from '../utils/constants'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { removeUser } from '../utils/userSlice'
+import { removeFeed } from '../utils/feedSlice'
 
 const Navbar = () => {
   const user = useSelector((store) => store.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  
+
   const handleLogout = async () => {
     try {
-      await axios.post(BASE_URL + '/logout', {}, { withCredentials: true })
+      const res = await axios.post(
+        BASE_URL + '/logout',
+        {},
+        { withCredentials: true }
+      )
       dispatch(removeUser())
-      toast.success('Logged Out Successfully')
+      dispatch(removeFeed())
+      toast.success(res?.data)
       return navigate('/login')
     } catch (e) {
       //DESIGN ERROR PAGE
-    
+      console.log(e)
     }
   }
   return (
     <div>
-      <div className="navbar bg-base-300 shadow-sm pl-[5%] pr-[5%]">
+      <div className="navbar bg-base-300 shadow-sm px-[5%]">
         <div className="flex-1">
           <Link to="/" className="btn btn-ghost text-xl">
             Dev Tinder
           </Link>
         </div>
         {user && (
-          <div className="flex items-center">
-            <div className="text-sm font-semibold">
-              Welcome, {user?.firstName}
+          <div className="flex items-center text-white">
+            <div className="text-sm font-semibold mx-2">
+              Welcome, {user.firstName}
             </div>
             <div className="dropdown dropdown-end">
               <div
@@ -44,7 +50,8 @@ const Navbar = () => {
                 <div className="w-7 rounded-full">
                   <img
                     // alt="Tailwind CSS Navbar component"
-                    src="https://cdn-icons-png.flaticon.com/512/10628/10628938.png "
+                    // src="https://cdn-icons-png.flaticon.com/512/10628/10628938.png "
+                    src={user.photoUrl}
                   />
                 </div>
               </div>
@@ -59,7 +66,10 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li>
-                  <a>Settings</a>
+                  <Link to="/connections">Connections</Link>
+                </li>
+                <li>
+                  <Link to="/requests">Requests</Link>
                 </li>
                 <li>
                   <a onClick={handleLogout}>Logout</a>
@@ -74,5 +84,3 @@ const Navbar = () => {
 }
 
 export default Navbar
-
-//https://cdn-icons-png.flaticon.com/512/10628/10628938.png

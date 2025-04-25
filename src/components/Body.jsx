@@ -13,25 +13,24 @@ const Body = () => {
   const userData = useSelector((store) => store.user)
 
   const fetchUser = async () => {
+    if (userData && userData.firstName) return
     try {
       const res = await axios.get(BASE_URL + '/profile/view', {
         withCredentials: true,
       })
-
       dispatch(addUser(res.data))
     } catch (err) {
-      if (err.status === 401) {
+      if (err.response && err.response.status === 401) {
         navigate('/login')
       }
-      console.log(err)
+      console.error(err)
     }
   }
 
   useEffect(() => {
-    if (!userData) {
-      fetchUser()
-    }
-  }, [])
+    fetchUser()
+  },[])
+
   return (
     <div>
       <Navbar />
@@ -40,5 +39,4 @@ const Body = () => {
     </div>
   )
 }
-
 export default Body

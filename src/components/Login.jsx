@@ -8,40 +8,73 @@ import { addUser } from '../utils/userSlice'
 import { BASE_URL } from '../utils/constants'
 
 const Login = () => {
-  const [email, setEmail] = useState('rahul.anand88096@gmail.com')
-  const [password, setPassword] = useState('Rahul~7250')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [isLoginForm, setIsLoginForm] = useState(true)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const onLogin = async () => {
+  const handleLogin = async () => {
     try {
       const res = await axios.post(
-        BASE_URL+'/login',
+        BASE_URL + '/login',
         {
           email,
           password,
         },
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       )
-      dispatch(addUser(res.data))
-      toast.success('Login Successful')
-      return navigate('/feed')
-    } catch (e) {
-      console.error(e)
-      toast.error(e.message)
+      dispatch(addUser(res?.data))
+      toast.success('Login Successful!')
+      return navigate('/')
+    } catch (err) {
+      setError(err?.response?.data || 'Something went wrong')
     }
   }
+  const handleSignUp = async () => {
+    try {
+      const res = await axios.post(
+        BASE_URL + '/signup',
+        { firstName, lastName, email, password },
+        { withCredentials: true }
+      )
+      console.log(res.data.data)
+      dispatch(addUser(res.data.data))
+      toast.success(res.data.message)
+      return navigate('/profile')
+    } catch (err) {}
+  }
+
   return (
-    <div className="flex justify-center mt-20  ">
+    <div className="flex justify-center mt-20">
       <Toaster />
       <div className="card bg-base-300 text-neutral-content w-96">
         <div className="card-body">
           <div className="flex justify-center">
-            <h2 className="text-3xl font-bold">Login</h2>
+            <h2 className="text-3xl font-bold">
+              {isLoginForm ? 'Login' : 'Sign Up '}
+            </h2>
           </div>
-          {/*emailId */}
+          {!isLoginForm && (
+            <>
+              <input
+                type="text"
+                placeholder="First Name"
+                value={firstName}
+                className="input input-md validator"
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={lastName}
+                className="input input-md validator"
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </>
+          )}
           <label className="input validator">
             <svg
               className="h-[1em] opacity-50"
@@ -69,6 +102,7 @@ const Login = () => {
             />
           </label>
           <div className="validator-hint hidden">Enter valid email address</div>
+
           <label className="input validator">
             <svg
               className="h-[1em] opacity-50"
@@ -87,6 +121,7 @@ const Login = () => {
               </g>
             </svg>
             {/* //password */}
+
             <input
               type="password"
               value={password}
@@ -110,14 +145,34 @@ const Login = () => {
           </p>
           <div className="mt-2">
             <button
-              className="btn btn-outline btn-primary btn-block"
-              onClick={onLogin}
+              className="btn btn-soft btn-primary btn-block"
+              onClick={isLoginForm ? handleLogin : handleSignUp}
             >
-              Login
+              {isLoginForm ? 'Login' : 'Sign Up'}
             </button>
           </div>
           <div className="text-lg text-center mt-2">
-            Don't have account? <Link>Sign Up</Link>
+            {isLoginForm ? (
+              <>
+                Don't have account?{' '}
+                <button
+                  className="border-none font-bold cursor-pointer"
+                  onClick={() => setIsLoginForm((value) => !value)}
+                >
+                  Sign Up
+                </button>
+              </>
+            ) : (
+              <>
+                Existing user?{' '}
+                <button
+                  className="border-none font-bold cursor-pointer"
+                  onClick={() => setIsLoginForm((value) => !value)}
+                >
+                  Log In
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
